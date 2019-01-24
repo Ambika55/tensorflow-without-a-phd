@@ -41,7 +41,7 @@ gcloud ml-engine jobs submit training airplane_tpu$N \
     --region ${REGION} \
     --module-name trainer_yolo.main \
     --package-path trainer_yolo \
-    --runtime-version 1.9 \
+    --runtime-version 1.12 \
     -- \
     --tiledata "${TILEDATA}" \
     --hp-lr2 1000 \
