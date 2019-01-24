@@ -18,9 +18,5 @@
 
 trainingInput:
   scaleTier: CUSTOM
-  masterType: standard_p100
-  parameterServerType: standard
-  workerType: standard_p100
-
-  parameterServerCount: 1
-  workerCount: 4
+  masterType: standard
+  workerType: cloud_tpu_v3
