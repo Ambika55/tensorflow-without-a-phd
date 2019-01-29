@@ -142,8 +142,8 @@ def start_training(output_dir, hparams, data, tiledata, **kwargs):
 
     # tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
 
-    TPU_EVAL_EVERY_STEPS = 10000  # only one eval at the end
-    for i in range(int(math.ceil(hparams["iterations"]*1.0/TPU_EVAL_EVERY_STEPS))):
+    TPU_EVAL_EVERY_STEPS = hparams["iterations"]//hparams["evaluations"]
+    for i in range(hparams["evaluations"]):
         estimator.train(train_data_input_fn, steps=min(TPU_EVAL_EVERY_STEPS, hparams["iterations"]-TPU_EVAL_EVERY_STEPS*i))
         estimator.evaluate(input_fn=eval_data_input_fn, steps=hparams['eval_iterations'])
     estimator.export_savedmodel(os.path.join(output_dir, "planespotting"), serving_input_fn)
@@ -161,6 +161,7 @@ def main(argv):
     parser.add_argument('--hp-batch', default=10, type=int, help='Hyperparameter: training batch size. 1/8th of this is the real batch size on one TPU.')
     parser.add_argument('--hp-eval-batch-size', default=32, type=int, help='Hyperparameter: evaluation batch size')
     parser.add_argument('--hp-eval-iterations', default=262, type=int, help='Hyperparameter: eval iterations')  # eval dataset is 8380 tiles (262 batches of 32) - larger batch will OOM.
+    parser.add_argument('--hp-evaluations', default=4, type=int, help='Hyperparameter: number of evaluations during the training run')
     parser.add_argument('--hp-shuffle-buf', default=3000, type=int, help='Hyperparameter: data shuffle buffer size. Use at least 20,000 if training from aerial photos directly. 3000 is good when trainig from tiles.')
     parser.add_argument('--hp-layers', default=12, type=int, help='Hyperparameter: number of layers')
     parser.add_argument('--hp-first-layer-filter-size', default=3, type=int, help='Hyperparameter: filter size in first layer')
